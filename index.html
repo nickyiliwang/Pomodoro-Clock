@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Detective Pikachu</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="length-label">
+        <h1 id="break-label">Break Length</h1>
+        <h1 id="session-label">Session Length</h1>
+      </div>
+      <div id="countBtn">
+        <button id="break-increment">Break +</button>
+        <button id="break-decrement">Break -</button>
+        <button id="session-increment">Session +</button>
+        <button id="session-decrement">Session -</button>
+      </div>
+      <div id="length-count">
+        <input id="break-length" value="5" disabled />
+        <input id="session-length" value="25" disabled />
+      </div>
+      <div id="length-label">
+        <h3>Break Length: 5</h3>
+        <h3>Session Length: 25</h3>
+      </div>
+      <div id="timer-panel">
+        <h1 id="timer-label">Session is initialized</h1>
+        <button id="time-left" value="0" disabled>00:00</button>
+        <button id="start_stop">Start/Stop</button>
+        <button id="reset">Reset</button>
+      </div>
+    </div>
+
+    <audio
+      id="beep"
+      src="https://upload.wikimedia.org/wikipedia/commons/c/c6/Sputnik_beep.ogg"
+    ></audio>
+
+    <script src="./script.js"></script>
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+  </body>
+</html>
