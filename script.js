@@ -10,7 +10,7 @@ let startStop = document.querySelector("#start_stop");
 let reset = document.querySelector("#reset");
 let audio = document.querySelector("#beep");
 
-//Increment click listeners
+//Click Listener
 breakInc.addEventListener("click", () => {
   if (breakLength.value < 60) {
     breakLength.value++;
@@ -21,7 +21,6 @@ sessionInc.addEventListener("click", () => {
     sessionLength.value++;
   }
 });
-//Decrement click listeners
 breakDec.addEventListener("click", () => {
   if (breakLength.value > 1) {
     breakLength.value--;
@@ -39,7 +38,8 @@ let isSession = true;
 let isRunning = false;
 //Time values
 let seconds = 0;
-let minutes = sessionLength.value;
+let minutes = 0;
+let ticking;
 
 const displayElements = () => {
   if (minutes < 10 && seconds >= 10) {
@@ -64,17 +64,17 @@ const displayElements = () => {
 //Break or Session?
 const breakOrSession = () => {
   if (isSession === true) {
-    label.textContent = "Session";
-    minutes = sessionLength.value;
-  }
-  if (isSession === false) {
     label.textContent = "Break";
     minutes = breakLength.value;
+    isSession = false;
+  } else if (isSession === false) {
+    label.textContent = "Session";
+    minutes = sessionLength.value;
+    isSession = true;
   }
 };
 
 const stopWatch = () => {
-  console.log("running");
   if (seconds > 0 && isPaused === false && isRunning === true) {
     seconds--;
   }
@@ -83,38 +83,36 @@ const stopWatch = () => {
     seconds = 59;
   }
   if (minutes === 0 && seconds === 0 && isRunning === true) {
-    isPaused = true;
-    audio.play();
+    
+    audio.play().onended = breakOrSession();
+    
   }
   displayElements();
 };
 
-//start stop
-const startTimer = () => {
-  if (isRunning === false) {
-    isRunning = true;
-    isPaused = false;
-    minutes = sessionLength.value;
-    setInterval(stopWatch, 1000);
-  }
+startStop.addEventListener(
+  "click",
+  (PEPEJAM = () => {
+    if (isRunning === false) {
+      isPaused = false;
+      isRunning = true;
+      minutes = sessionLength.value;
+      ticking = setInterval(stopWatch, 1000);
+    } else if (isRunning === true) {
+      isPaused === false ? (isPaused = true) : (isPaused = false);
+    }
+  })
+);
 
-  if (isRunning === true) {
-    isPaused === false ? (isPaused = true) : (isPaused = false);
-  }
-};
-
-startStop.addEventListener("click", startTimer);
-
-//reset
-const resetTimer = () => {
+reset.addEventListener("click", ALLCLEAR = () => {
   isPaused = true;
   isSession = true;
   isRunning = false;
   sessionLength.value = 25;
   breakLength.value = 5;
-  minutes = sessionLength.value;
+  display.textContent = "25:00";
+  label.textContent = "Session";
   seconds = 0;
   audio.load();
-};
-
-reset.addEventListener("click", resetTimer);
+  clearInterval(ticking);
+});
