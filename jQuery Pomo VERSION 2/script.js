@@ -4,7 +4,7 @@ let breakInc = document.querySelector("#break-increment");
 let sessionInc = document.querySelector("#session-increment");
 let breakDec = document.querySelector("#break-decrement");
 let sessionDec = document.querySelector("#session-decrement");
-let display = document.querySelector("#time-left");
+let display = document.querySelector("#sessionTime-left");
 let label = document.querySelector("#timer-label");
 let startStop = document.querySelector("#start_stop");
 let reset = document.querySelector("#reset");
@@ -31,48 +31,28 @@ breakDec.addEventListener("click", () => {
   }
 });
 
+// 1 second = 1000
+// 1 minute = 60000
+// 10 minutes = 600000
 //Bool Check
-let isPaused = true;
 let isSession = true;
 let isRunning = false;
 //Time values
-let intervalID;
-let seconds = 0;
-let minutes = sessionLength.value;
-let rndVal = 10;
-let ding;
-
-const displayElements = () => {
-  if (minutes < 10 && seconds >= 10) {
-    display.textContent =
-      minutes.toString().padStart(2, "0") + ":" + seconds.toString();
-  }
-  if (minutes < 10 && seconds < 10) {
-    display.textContent =
-      minutes.toString().padStart(2, "0") +
-      ":" +
-      seconds.toString().padStart(2, "0");
-  }
-  if (minutes >= 10 && seconds < 10) {
-    display.textContent =
-      minutes.toString() + ":" + seconds.toString().padStart(2, "0");
-  }
-  if (minutes >= 10 && seconds >= 10) {
-    display.textContent = minutes.toString() + ":" + seconds.toString();
-  }
-};
+let interval;
+let sessionTime = 0;
+let breakTime = 0;
 
 const stopWatch = () => {
-  if (seconds > 0 && minutes >= 0 && isPaused === false && isRunning === true) {
-    seconds--;
+  if (sessionTime > 0 && minutes >= 0 && isRunning === true) {
+    sessionTime--;
   }
-  if (seconds === 0 && minutes > 0 && isRunning === true) {
+  if (sessionTime === 0 && minutes > 0 && isRunning === true) {
     minutes--;
-    seconds = 59;
+    sessionTime = 59;
   }
   if (
     minutes === 0 &&
-    seconds === 0 &&
+    sessionTime === 0 &&
     isRunning === true &&
     isSession === true
   ) {
@@ -83,7 +63,7 @@ const stopWatch = () => {
   }
   if (
     minutes === 0 &&
-    seconds === 0 &&
+    sessionTime === 0 &&
     isRunning === true &&
     isSession === false
   ) {
@@ -91,32 +71,26 @@ const stopWatch = () => {
     label.textContent = "Session";
     minutes = sessionLength.value;
     isSession = true;
-    isPaused = true;
   }
 
-  displayElements();
+  display.textContent = moment().format("mm:ss");
 };
 
 startStop.addEventListener("click", () => {
-  if (isRunning === false) {
-    minutes = sessionLength.value;
-    intervalID = setInterval(stopWatch, 1000);
-    isPaused = false;
-    isRunning = true;
-  } else if (isRunning === true) {
-    isPaused === false ? (isPaused = true) : (isPaused = false);
+  isRunning = true;
+  interval = setInterval(stopWatch, 1000);
+  if (isRunning === true) {
+    clearInterval(interval);
   }
 });
 
 reset.addEventListener("click", () => {
-  clearInterval(intervalID);
-  isPaused = true;
+  clearInterval(interval);
   isSession = true;
   isRunning = false;
   sessionLength.value = 25;
   breakLength.value = 5;
   minutes = sessionLength.value;
-  seconds = 0;
+  sessionTime = 0;
   audio.load();
-  displayElements();
 });

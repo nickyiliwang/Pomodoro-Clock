@@ -1,0 +1,31 @@
+.header {
+  display: flex;
+  justify-content: center;
+}
+
+.settings {
+  display: flex;
+  justify-content: space-around;
+}
+.SessionOrBreak {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.SessionOrBreak-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Controls {
+  display: flex;
+  justify-content: center;
+}
