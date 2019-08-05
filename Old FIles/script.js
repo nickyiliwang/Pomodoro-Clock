@@ -10,25 +10,24 @@ let startStop = document.querySelector("#start_stop");
 let reset = document.querySelector("#reset");
 let audio = document.querySelector("#beep");
 
-//Click Listener
-breakInc.addEventListener("click", () => {
-  if (breakLength.value < 60) {
-    breakLength.value++;
-  }
-});
 sessionInc.addEventListener("click", () => {
   if (sessionLength.value < 60) {
     sessionLength.value++;
   }
 });
-breakDec.addEventListener("click", () => {
-  if (breakLength.value > 1) {
-    breakLength.value--;
+breakInc.addEventListener("click", () => {
+  if (breakLength.value < 60) {
+    breakLength.value++;
   }
 });
 sessionDec.addEventListener("click", () => {
   if (sessionLength.value > 1) {
     sessionLength.value--;
+  }
+});
+breakDec.addEventListener("click", () => {
+  if (breakLength.value > 1) {
+    breakLength.value--;
   }
 });
 
@@ -37,9 +36,11 @@ let isPaused = true;
 let isSession = true;
 let isRunning = false;
 //Time values
+let intervalID;
 let seconds = 0;
-let minutes = 0;
-let ticking;
+let minutes = sessionLength.value;
+let rndVal = 10;
+let ding;
 
 const displayElements = () => {
   if (minutes < 10 && seconds >= 10) {
@@ -61,58 +62,61 @@ const displayElements = () => {
   }
 };
 
-//Break or Session?
-const breakOrSession = () => {
-  if (isSession === true) {
-    label.textContent = "Break";
-    minutes = breakLength.value;
-    isSession = false;
-  } else if (isSession === false) {
-    label.textContent = "Session";
-    minutes = sessionLength.value;
-    isSession = true;
-  }
-};
-
 const stopWatch = () => {
-  if (seconds > 0 && isPaused === false && isRunning === true) {
+  if (seconds > 0 && minutes >= 0 && isPaused === false && isRunning === true) {
     seconds--;
   }
   if (seconds === 0 && minutes > 0 && isRunning === true) {
     minutes--;
     seconds = 59;
   }
-  if (minutes === 0 && seconds === 0 && isRunning === true) {
-    
-    audio.play().onended = breakOrSession();
-    
+  if (
+    minutes === 0 &&
+    seconds === 0 &&
+    isRunning === true &&
+    isSession === true
+  ) {
+    audio.play();
+    label.textContent = "Break";
+    minutes = breakLength.value;
+    isSession = false;
   }
+  if (
+    minutes === 0 &&
+    seconds === 0 &&
+    isRunning === true &&
+    isSession === false
+  ) {
+    audio.play();
+    label.textContent = "Session";
+    minutes = sessionLength.value;
+    isSession = true;
+    isPaused = true;
+  }
+
   displayElements();
 };
 
-startStop.addEventListener(
-  "click",
-  (PEPEJAM = () => {
-    if (isRunning === false) {
-      isPaused = false;
-      isRunning = true;
-      minutes = sessionLength.value;
-      ticking = setInterval(stopWatch, 1000);
-    } else if (isRunning === true) {
-      isPaused === false ? (isPaused = true) : (isPaused = false);
-    }
-  })
-);
+startStop.addEventListener("click", () => {
+  if (isRunning === false) {
+    minutes = sessionLength.value;
+    intervalID = setInterval(stopWatch, 1000);
+    isPaused = false;
+    isRunning = true;
+  } else if (isRunning === true) {
+    isPaused === false ? (isPaused = true) : (isPaused = false);
+  }
+});
 
-reset.addEventListener("click", ALLCLEAR = () => {
+reset.addEventListener("click", () => {
+  clearInterval(intervalID);
   isPaused = true;
   isSession = true;
   isRunning = false;
   sessionLength.value = 25;
   breakLength.value = 5;
-  display.textContent = "25:00";
-  label.textContent = "Session";
+  minutes = sessionLength.value;
   seconds = 0;
   audio.load();
-  clearInterval(ticking);
+  displayElements();
 });
