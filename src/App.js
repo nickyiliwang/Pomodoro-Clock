@@ -18,61 +18,61 @@ class App extends React.Component {
   };
 
   // *************************************************************************
-  timer = () => {
-    let time, newTime, newLabel;
-    time = this.state.currentTime - 1;
-
-    if (time >= 0) {
-      this.setState({ currentTime: time });
-    } else {
-      if (this.state.currentTime !== -1) {
-        this.state.sound.play();
-      }
-      if (this.state.label === "Session") {
-        newTime = this.state.break * 60;
-        newLabel = "Break";
-      } else {
-        newTime = this.state.session * 60;
-        newLabel = "Session";
-      }
+  handleSessionBreak = () => {
+    if (this.state.label === "Session") {
       this.setState({
-        label: newLabel,
-        currentTime: newTime
+        label: "Break",
+        currentTime: this.state.break
+      });
+    } else {
+      this.setState({
+        label: "Session",
+        currentTime: this.state.session
       });
     }
   };
-  // *************************************************************************
 
-  // *************************************************************************
+  handleCountDown = () => {
+    let timer = setInterval(() => {
+      if (this.state.currentTime !== 0) {
+        this.setState({ currentTime: this.state.currentTime - 1 });
+      } else {
+        this.state.sound.play();
+        this.handleSessionBreak();
+      }
+    }, 1000);
+
+    this.setState({ intervalID: timer });
+  };
+
   handleStartStop = () => {
     if (this.state.intervalID === null) {
       this.setState({ currentTime: this.state.session });
-      let timer = setInterval(() => {
-        if (this.state.isPaused === false) {
-          this.setState({ currentTime: this.state.currentTime - 1 });
-        }
-      }, 1000);
-      this.setState({ intervalID: timer });
+      this.handleCountDown();
     } else {
-      this.state.isPaused === false
-        ? this.setState({ isPaused: true })
-        : this.setState({ isPaused: false });
+      if (this.state.isPaused === false) {
+        clearInterval(this.state.intervalID);
+        this.setState({ isPaused: true });
+      } else {
+        this.handleCountDown();
+        this.setState({ isPaused: false });
+      }
     }
   };
 
   handleReset = () => {
+    const sound = document.querySelector("audio");
     clearInterval(this.state.intervalID);
-    this.state.sound.pause();
-    this.state.sound.currentTime = 0;
-
+    sound.pause();
+    sound.currentTime = 0;
     this.setState({
       break: 300,
       session: 1500,
-      currentTime: this.state.session,
+      currentTime: 1500,
       label: "Session",
       intervalID: null,
       isPaused: false,
-      sound: null
+      sound: sound
     });
   };
   // *************************************************************************
@@ -123,7 +123,12 @@ class App extends React.Component {
   }
 
   renderDisplay = () => {
-    const millerSeconds = this.state.currentTime * 1000;
+    let millerSeconds;
+    if (this.state.intervalID === null) { 
+     millerSeconds = this.state.session * 1000;
+    } else {
+      millerSeconds = this.state.currentTime * 1000;
+    }
     return moment(millerSeconds).format("mm:ss");
   };
 
